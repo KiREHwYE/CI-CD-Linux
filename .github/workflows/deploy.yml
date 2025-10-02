@@ -23,8 +23,7 @@ jobs:
 
       - name: Run tests
         run: |
-          export PYTHONPATH=$(pwd)/src
-          pytest -v tests
+          PYTHONPATH=$(pwd) pytest -v tests
 
   build-and-push:
     runs-on: ubuntu-latest
