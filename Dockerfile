@@ -33,5 +33,5 @@ ENV PATH="/home/appuser/.local/bin:${PATH}"
 
 EXPOSE 8064
 
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8064"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8064"]
 
