@@ -22,7 +22,9 @@ jobs:
           pip install -e .[test]
 
       - name: Run tests
-        run: pytest -v tests
+        run: |
+          export PYTHONPATH=$(pwd)/src
+          pytest -v tests
 
   build-and-push:
     runs-on: ubuntu-latest
