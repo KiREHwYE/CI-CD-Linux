@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/
 
 COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY --from=builder /app/src /app/src
+COPY --from=builder /app/tests /app/tests
 
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
