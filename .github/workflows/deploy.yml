@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted 
     services:
       postgres:
         image: postgres:15
@@ -40,7 +40,7 @@ jobs:
           PYTHONPATH=$(pwd) pytest -v tests
 
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: test
     steps:
       - name: Checkout code
@@ -60,7 +60,7 @@ jobs:
           podman push $IMAGE
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-and-push
     steps:
       - name: Deploy via SSH
