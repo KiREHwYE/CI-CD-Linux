@@ -50,7 +50,7 @@ jobs:
             set -e
             IMAGE_TEST=ghcr.io/vacdotcs/python-app:test-${{ github.sha }}
             podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
-            podman run --rm --name python-app-test $IMAGE_TEST python -m pytest -v tests
+            podman run --rm --name python-app-test --network host $IMAGE_TEST python -m pytest -v tests
 
   deploy:
     runs-on: self-hosted
