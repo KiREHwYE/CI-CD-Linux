@@ -51,7 +51,7 @@ COPY --from=builder /app/src /app/src
 RUN find /usr/local/lib/python3.10/site-packages -name '__pycache__' -type d -exec rm -rf {} + \
     && find /usr/local/lib/python3.10/site-packages -name '*.pyc' -type f -delete
 
-RUN useradd -m -u 1000 appuser && \
+RUN useradd -u 1000 appuser && \
     chown -R appuser:appuser /app
 
 USER appuser
