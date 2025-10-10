@@ -11,7 +11,6 @@ COPY pyproject.toml ./
 
 ENV PIP_NO_CACHE_DIR=1
 
-# Только runtime deps
 RUN python -m pip install --no-cache-dir --upgrade pip && \
     python -m pip install --no-cache-dir .
 
@@ -49,13 +48,16 @@ COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /app/src /app/src
 
-RUN find /usr/local/lib/python3.10/site-packages -name '__pycache__' -type d -exec rm -rf {} +
+RUN find /usr/local/lib/python3.10/site-packages -name '__pycache__' -type d -exec rm -rf {} + \
+    && find /usr/local/lib/python3.10/site-packages -name '*.pyc' -type f -delete \
+    && find /usr/local/lib/python3.10/site-packages -name '*.dist-info' -type d -exec rm -rf {} +
 
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 
 USER appuser
 ENV PATH="/home/appuser/.local/bin:${PATH}"
+
 EXPOSE 8064
 
 CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8064"]
