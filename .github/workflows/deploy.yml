@@ -17,23 +17,20 @@ jobs:
         run: echo "::set-output name=sha::${GITHUB_SHA}"
 
       - name: Log in to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+        run: |
+          podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
 
       - name: Build and push test image
         run: |
           IMAGE_TEST=ghcr.io/KiREHwYE/python-app:test-${{ github.sha }}
-          docker build --target test -t $IMAGE_TEST .
-          docker push $IMAGE_TEST
+          podman build --target test -t $IMAGE_TEST .
+          podman push $IMAGE_TEST
 
       - name: Build and push runtime image
         run: |
           IMAGE_RUNTIME=ghcr.io/KiREHwYE/python-app:runtime-${{ github.sha }}
-          docker build --target runtime -t $IMAGE_RUNTIME .
-          docker push $IMAGE_RUNTIME
+          podman build --target runtime -t $IMAGE_RUNTIME .
+          podman push $IMAGE_RUNTIME
 
   test:
     runs-on: self-hosted
