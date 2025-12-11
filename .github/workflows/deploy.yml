@@ -22,13 +22,13 @@ jobs:
 
       - name: Build and push test image
         run: |
-          IMAGE_TEST=ghcr.io/kirehwye/python-app:test-${{ github.sha }}
+          IMAGE_TEST=ghcr.io/kirehwye/web-adm:test-${{ github.sha }}
           podman build --target test -t $IMAGE_TEST .
           podman push $IMAGE_TEST
 
       - name: Build and push runtime image
         run: |
-          IMAGE_RUNTIME=ghcr.io/kirehwye/python-app:runtime-${{ github.sha }}
+          IMAGE_RUNTIME=ghcr.io/kirehwye/web-adm:runtime-${{ github.sha }}
           podman build --target runtime -t $IMAGE_RUNTIME .
           podman push $IMAGE_RUNTIME
 
@@ -39,9 +39,9 @@ jobs:
       - name: Run tests locally
         run: |
           set -e
-          IMAGE_TEST=ghcr.io/kirehwye/python-app:test-${{ github.sha }}
+          IMAGE_TEST=ghcr.io/kirehwye/web-adm:test-${{ github.sha }}
           podman login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GHCR_TOKEN }}"
-          podman run --rm --name python-app-test --network host $IMAGE_TEST python -m pytest -v tests
+          podman run --rm --name web-adm-test --network host $IMAGE_TEST python -m pytest -v tests
           podman rmi $IMAGE_TEST || true
 
   deploy:
@@ -52,17 +52,17 @@ jobs:
         run: |
           set -e
 
-          IMAGE_RUNTIME=ghcr.io/kirehwye/python-app:runtime-${{ github.sha }}
+          IMAGE_RUNTIME=ghcr.io/kirehwye/web-adm:runtime-${{ github.sha }}
 
           podman login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GHCR_TOKEN }}"
 
-          podman stop python-app || true
-          podman rm -f python-app || true
+          podman stop web-adm || true
+          podman rm -f web-adm || true
 
-          podman run --replace -d --name python-app --network host -p 8064:8064 $IMAGE_RUNTIME
+          podman run --replace -d --name web-adm --network host -p 8064:8064 $IMAGE_RUNTIME
 
           podman images --format "{{.Repository}}:{{.Tag}}" \
-            | grep 'python-app:runtime-' \
+            | grep 'web-adm:runtime-' \
             | grep -v "${{ github.sha }}" \
             | xargs -r podman rmi -f || true
 
