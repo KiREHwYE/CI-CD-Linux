@@ -1,4 +1,5 @@
 name: CI/CD
+  
 
 on:
   push:
@@ -11,6 +12,12 @@ jobs:
       sha: ${{ steps.set-sha.outputs.sha }}
     steps:
       - uses: actions/checkout@v3
+
+        - name: Fix podman state
+          run: |
+            podman system migrate || true
+            podman system reset --force || true
+
 
       - name: Set image SHA
         id: set-sha
