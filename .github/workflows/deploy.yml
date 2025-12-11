@@ -18,7 +18,7 @@ jobs:
 
       - name: Log in to GHCR
         run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GHCR_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Build and push test image
         run: |
@@ -40,7 +40,7 @@ jobs:
         run: |
           set -e
           IMAGE_TEST=ghcr.io/KiREHwYE/python-app:test-${{ github.sha }}
-          podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN }}
+          podman login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GHCR_TOKEN }}"
           podman run --rm --name python-app-test --network host $IMAGE_TEST python -m pytest -v tests
           podman rmi $IMAGE_TEST || true
 
@@ -51,12 +51,16 @@ jobs:
       - name: Deploy runtime image locally
         run: |
           set -e
-          
-          IMAGE_RUNTIME=ghcr.io/KiREHwYE/python-app:runtime-${{ github.sha 
-          podman login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_TOKEN 
-          podman stop python-app || 
-          podman rm -f python-app || 
-          podman run --replace -d --name python-app --network host -p 8064:8064 $
+
+          IMAGE_RUNTIME=ghcr.io/KiREHwYE/python-app:runtime-${{ github.sha }}
+
+          podman login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GHCR_TOKEN }}"
+
+          podman stop python-app || true
+          podman rm -f python-app || true
+
+          podman run --replace -d --name python-app --network host -p 8064:8064 $IMAGE_RUNTIME
+
           podman images --format "{{.Repository}}:{{.Tag}}" \
             | grep 'python-app:runtime-' \
             | grep -v "${{ github.sha }}" \
